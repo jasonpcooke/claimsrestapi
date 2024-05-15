@@ -2,6 +2,7 @@ package com.claims.claimsrestapi.service.impl;
 
 import com.claims.claimsrestapi.dto.ClaimDto;
 import com.claims.claimsrestapi.entity.Claim;
+import com.claims.claimsrestapi.exception.CreatedAndUpdatedDateTimeException;
 import com.claims.claimsrestapi.exception.ResourceNotFoundException;
 import com.claims.claimsrestapi.mapper.ClaimMapper;
 import com.claims.claimsrestapi.repository.ClaimRepository;
@@ -40,5 +41,23 @@ public class ClaimServiceImpl implements ClaimService {
         return claims.stream()
                 .map(ClaimMapper::mapToClaimDto)
                 .toList();
+    }
+
+    @Override
+    public ClaimDto updateClaim(Long claimId, ClaimDto updatedClaim) {
+        Claim claim = claimRepository.findById(claimId).orElseThrow(
+                () -> new ResourceNotFoundException("Claim does not exist with given ID: " + claimId)
+        );
+        if(claim.getCreatedDateTime().after(updatedClaim.getUpdatedDateTime())){
+            throw new CreatedAndUpdatedDateTimeException("UpdatedDateTime cannot be before CreatedDateTime");
+        }
+        claim.setAmount(updatedClaim.getAmount());
+        claim.setStatus(updatedClaim.getStatus());
+        claim.setCreatedDateTime(updatedClaim.getCreatedDateTime());
+        claim.setUpdatedDateTime(updatedClaim.getUpdatedDateTime());
+
+        Claim updatedClaimObj = claimRepository.save(claim);
+
+        return ClaimMapper.mapToClaimDto(updatedClaimObj);
     }
 }

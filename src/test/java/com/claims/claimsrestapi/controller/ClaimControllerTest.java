@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,5 +92,32 @@ class ClaimControllerTest {
                 .andExpect(jsonPath("$[0].id").value(claim1.getId()))
                 .andExpect(jsonPath("$[1].id").value(claim2.getId()));
         verify(claimService, times(1)).getAllClaims(); // Verifying that getAllClaims method of claimService is called exactly once
+
+        ResponseEntity<List<ClaimDto>> responseEntity = claimController.getAllClaims();
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(mockClaims, responseEntity.getBody());
+    }
+
+    @Test
+    void testUpdatedClaim() {
+        // Given
+        Long claimId = 1L;
+        ClaimDto updatedClaimDto = new ClaimDto();
+        updatedClaimDto.setAmount(BigDecimal.valueOf(100.00));
+        updatedClaimDto.setStatus("APPROVED");
+
+        ClaimDto mockClaimDto = new ClaimDto();
+        mockClaimDto.setId(claimId);
+        mockClaimDto.setAmount(BigDecimal.valueOf(200.00));
+        mockClaimDto.setStatus("REJECTED");
+
+        when(claimService.updateClaim(claimId, updatedClaimDto)).thenReturn(mockClaimDto);
+
+        // When
+        ResponseEntity<ClaimDto> responseEntity = claimController.updatedClaim(claimId, updatedClaimDto);
+
+        // Then
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(mockClaimDto, responseEntity.getBody());
     }
 }
