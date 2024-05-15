@@ -210,4 +210,28 @@ class ClaimServiceImplTest {
         verify(claimRepository, times(1)).findById(claimId); // Verify that findById was invoked once
         verify(claimRepository, never()).save(any());
     }
+
+    @Test
+    void testDeleteClaim_Success() {
+        // Given
+        Long claimId = 1L;
+        when(claimRepository.findById(claimId)).thenReturn(java.util.Optional.of(new Claim()));
+
+        // When
+        claimService.deleteClaim(claimId);
+
+        // Then
+        verify(claimRepository, times(1)).deleteById(claimId);
+    }
+
+    @Test
+    void testDeleteClaim_ClaimNotFound() {
+        // Given
+        Long claimId = 1L;
+        when(claimRepository.findById(claimId)).thenReturn(java.util.Optional.empty());
+
+        // When & Then
+        assertThrows(ResourceNotFoundException.class, () -> claimService.deleteClaim(claimId));
+        verify(claimRepository, never()).deleteById(claimId);
+    }
 }

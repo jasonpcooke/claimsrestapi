@@ -2,12 +2,9 @@ package com.claims.claimsrestapi.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
 
 import com.claims.claimsrestapi.dto.ClaimDto;
+import com.claims.claimsrestapi.exception.ResourceNotFoundException;
 import com.claims.claimsrestapi.service.ClaimService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +16,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -92,10 +91,6 @@ class ClaimControllerTest {
                 .andExpect(jsonPath("$[0].id").value(claim1.getId()))
                 .andExpect(jsonPath("$[1].id").value(claim2.getId()));
         verify(claimService, times(1)).getAllClaims(); // Verifying that getAllClaims method of claimService is called exactly once
-
-        ResponseEntity<List<ClaimDto>> responseEntity = claimController.getAllClaims();
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(mockClaims, responseEntity.getBody());
     }
 
     @Test
@@ -119,5 +114,19 @@ class ClaimControllerTest {
         // Then
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(mockClaimDto, responseEntity.getBody());
+    }
+
+    @Test
+    void testDeleteClaim() {
+        // Given
+        Long claimId = 1L;
+
+        // When
+        ResponseEntity<String> responseEntity = claimController.deleteClaim(claimId);
+
+        // Then
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals("Claim deleted successfully.", responseEntity.getBody());
+        verify(claimService, times(1)).deleteClaim(claimId);
     }
 }

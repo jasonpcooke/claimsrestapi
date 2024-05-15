@@ -60,4 +60,13 @@ public class ClaimServiceImpl implements ClaimService {
 
         return ClaimMapper.mapToClaimDto(updatedClaimObj);
     }
+
+    @Override
+    public void deleteClaim(Long claimId) {
+        claimRepository.findById(claimId).orElseThrow(
+                () -> new ResourceNotFoundException("Claim does not exist with given ID: " + claimId)
+        );
+
+        claimRepository.deleteById((claimId));
+    }
 }
