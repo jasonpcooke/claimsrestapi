@@ -9,6 +9,8 @@ import com.claims.claimsrestapi.service.ClaimService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class ClaimServiceImpl implements ClaimService {
@@ -30,5 +32,13 @@ public class ClaimServiceImpl implements ClaimService {
                         new ResourceNotFoundException("Claim does not exist with given id: " + claimId));
 
         return ClaimMapper.mapToClaimDto(claim);
+    }
+
+    @Override
+    public List<ClaimDto> getAllClaims() {
+        List<Claim> claims = claimRepository.findAll();
+        return claims.stream()
+                .map(ClaimMapper::mapToClaimDto)
+                .toList();
     }
 }

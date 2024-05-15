@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/claims")
@@ -21,11 +23,18 @@ public class ClaimController {
         return new ResponseEntity<>(savedClaim, HttpStatus.CREATED);
     }
 
-    //Build Add Claim ReST API
+    //Build Get Claim ReST API
     @GetMapping("{id}")
     public ResponseEntity<ClaimDto> getClaimById(@PathVariable("id") Long claimId){
         ClaimDto claimDto = claimService.getClaimById(claimId);
         return ResponseEntity.ok(claimDto);
+    }
+
+    //Build Get All Claims ReST API
+    @GetMapping
+    public ResponseEntity<List<ClaimDto>> getAllClaims(){
+        List<ClaimDto> claims = claimService.getAllClaims();
+        return ResponseEntity.ok(claims);
     }
 
 }
