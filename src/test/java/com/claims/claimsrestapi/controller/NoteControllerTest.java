@@ -1,6 +1,7 @@
 package com.claims.claimsrestapi.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
@@ -40,5 +41,19 @@ class NoteControllerTest {
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode()); // verify the status code
         assertEquals(savedNoteDto, responseEntity.getBody()); // verify that the response body matches the saved claim
         verify(noteService, times(1)).createNote(any(NoteDto.class)); // verify that claimService.createClaim was called once with any ClaimDto object
+    }
+
+    @Test
+    void testGetNote() {
+        // Given
+        Long noteId = 1L;
+
+        // When
+        ResponseEntity<NoteDto> responseEntity = noteController.getNoteById(noteId);
+
+        // Then
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertNull(responseEntity.getBody());
+        verify(noteService).getNoteById(noteId);
     }
 }
