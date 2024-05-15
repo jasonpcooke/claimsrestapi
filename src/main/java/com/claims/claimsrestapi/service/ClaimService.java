@@ -10,4 +10,6 @@ public interface ClaimService {
     ClaimDto getClaimById(Long claimId);
 
     List<ClaimDto> getAllClaims();
+
+    ClaimDto updateClaim(Long claimId, ClaimDto updatedClaim);
 }
