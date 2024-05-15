@@ -5,10 +5,7 @@ import com.claims.claimsrestapi.service.ClaimService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
 @RestController
@@ -22,6 +19,13 @@ public class ClaimController {
     public ResponseEntity<ClaimDto> createClaim(@RequestBody ClaimDto claimDto){
         ClaimDto savedClaim = claimService.createClaim(claimDto);
         return new ResponseEntity<>(savedClaim, HttpStatus.CREATED);
+    }
+
+    //Build Add Claim ReST API
+    @GetMapping("{id}")
+    public ResponseEntity<ClaimDto> getClaimById(@PathVariable("id") Long claimId){
+        ClaimDto claimDto = claimService.getClaimById(claimId);
+        return ResponseEntity.ok(claimDto);
     }
 
 }
