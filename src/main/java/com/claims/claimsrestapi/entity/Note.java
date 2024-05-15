@@ -11,7 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
@@ -19,18 +18,15 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "claims")
-public class Claim {
+@Table(name = "notes")
+public class Note {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
-    private BigDecimal amount;
-
-    @Column
-    private String status;
+    private String content;
 
     @Column(name = "created_date_time")
     private Date createdDateTime;
