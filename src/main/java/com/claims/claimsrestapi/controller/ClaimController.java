@@ -44,4 +44,11 @@ public class ClaimController {
         ClaimDto claimDto = claimService.updateClaim(claimId, updatedClaim);
         return ResponseEntity.ok(claimDto);
     }
+
+    // Build Delete Claim ReST API
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> deleteClaim(@PathVariable("id") Long claimID){
+        claimService.deleteClaim(claimID);
+        return ResponseEntity.ok("Claim deleted successfully.");
+    }
 }

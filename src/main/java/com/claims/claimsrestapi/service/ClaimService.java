@@ -12,4 +12,6 @@ public interface ClaimService {
     List<ClaimDto> getAllClaims();
 
     ClaimDto updateClaim(Long claimId, ClaimDto updatedClaim);
+
+    void deleteClaim(Long claimId);
 }
