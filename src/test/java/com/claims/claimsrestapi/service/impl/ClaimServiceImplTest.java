@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,5 +69,29 @@ class ClaimServiceImplTest {
         // When & Then
         assertThrows(ResourceNotFoundException.class, () -> claimService.getClaimById(claimId)); // Assert that an exception has been thrown due to the claim service not finding a claim with the provided claimId
         verify(claimRepository, times(1)).findById(claimId); // Verify that findById was invoked once
+    }
+
+    @Test
+    void testGetAllClaims() {
+        // Given
+        List<Claim> mockClaims = new ArrayList<>();
+        Claim claim1 = new Claim();
+        claim1.setId(1L);
+        mockClaims.add(claim1);
+        Claim claim2 = new Claim();
+        claim2.setId(2L);
+        mockClaims.add(claim2);
+
+        when(claimRepository.findAll()).thenReturn(mockClaims); // Mocking claimRepository.findAll() to return mockClaims
+
+        // When
+        List<ClaimDto> result = claimService.getAllClaims(); // Calling the method under test
+
+        // Then
+        assertNotNull(result); // Asserting that the result is not null
+        assertEquals(2, result.size()); // Asserting that the size of the result list is 2
+        assertEquals(1L, result.get(0).getId()); // Asserting the first claim ID in the result list
+        assertEquals(2L, result.get(1).getId()); // Asserting the second claim ID in the result list
+        verify(claimRepository, times(1)).findAll(); // Verifying that findAll method of claimRepository is called exactly once
     }
 }
