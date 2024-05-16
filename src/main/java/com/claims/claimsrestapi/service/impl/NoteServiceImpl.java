@@ -9,6 +9,8 @@ import com.claims.claimsrestapi.service.NoteService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class NoteServiceImpl implements NoteService {
@@ -30,5 +32,13 @@ public class NoteServiceImpl implements NoteService {
                         new ResourceNotFoundException("Note does not exist with given id: " + noteId));
 
         return NoteMapper.mapToNoteDto(note);
+    }
+
+    @Override
+    public List<NoteDto> getAllNotes() {
+        List<Note> notes = noteRepository.findAll();
+        return notes.stream()
+                .map(NoteMapper::mapToNoteDto)
+                .toList();
     }
 }
