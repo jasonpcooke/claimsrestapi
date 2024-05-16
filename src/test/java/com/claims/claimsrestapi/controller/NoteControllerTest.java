@@ -78,12 +78,13 @@ class NoteControllerTest {
         note2.setId(2L);
         mockNotes.add(note2);
 
+        // When
         when(noteService.getAllNotes()).thenReturn(mockNotes); // Mocking noteService.getAllNotes() to return mockNotes
 
         // Setting up MockMvc
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(noteController).build();
 
-        // When & Then
+        // Then
         mockMvc.perform(get("/api/notes")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -113,5 +114,19 @@ class NoteControllerTest {
         // Then
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(mockNoteDto, responseEntity.getBody());
+    }
+
+    @Test
+    void testDeleteNote() {
+        // Given
+        Long noteId = 1L;
+
+        // When
+        ResponseEntity<String> responseEntity = noteController.deleteNote(noteId);
+
+        // Then
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals("Note deleted successfully.", responseEntity.getBody());
+        verify(noteService, times(1)).deleteNote(noteId);
     }
 }

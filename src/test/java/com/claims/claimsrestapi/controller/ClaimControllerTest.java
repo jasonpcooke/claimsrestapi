@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.claims.claimsrestapi.dto.ClaimDto;
-import com.claims.claimsrestapi.exception.ResourceNotFoundException;
 import com.claims.claimsrestapi.service.ClaimService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -77,12 +76,13 @@ class ClaimControllerTest {
         claim2.setId(2L);
         mockClaims.add(claim2);
 
+        // When
         when(claimService.getAllClaims()).thenReturn(mockClaims); // Mocking claimService.getAllClaims() to return mockClaims
 
         // Setting up MockMvc
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(claimController).build();
 
-        // When & Then
+        // Then
         mockMvc.perform(get("/api/claims")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

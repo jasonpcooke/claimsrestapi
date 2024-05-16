@@ -59,4 +59,13 @@ public class NoteServiceImpl implements NoteService {
 
         return NoteMapper.mapToNoteDto(updatedNoteObj);
     }
+
+    @Override
+    public void deleteNote(Long noteId) {
+        noteRepository.findById(noteId).orElseThrow(
+                () -> new ResourceNotFoundException("Note does not exist with given ID: " + noteId)
+        );
+
+        noteRepository.deleteById((noteId));
+    }
 }

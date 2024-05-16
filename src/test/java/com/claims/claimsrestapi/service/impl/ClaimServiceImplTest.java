@@ -228,10 +228,14 @@ class ClaimServiceImplTest {
     void testDeleteClaim_ClaimNotFound() {
         // Given
         Long claimId = 1L;
+
+        // When
         when(claimRepository.findById(claimId)).thenReturn(java.util.Optional.empty());
 
-        // When & Then
-        assertThrows(ResourceNotFoundException.class, () -> claimService.deleteClaim(claimId));
+        // Then
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> claimService.deleteClaim(claimId));
         verify(claimRepository, never()).deleteById(claimId);
     }
 }

@@ -44,4 +44,11 @@ public class NoteController {
         NoteDto noteDto = noteService.updateNote(noteId, updatedNote);
         return ResponseEntity.ok(noteDto);
     }
+
+    // Build Delete Note ReST API
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> deleteNote(@PathVariable("id") Long noteID){
+        noteService.deleteNote(noteID);
+        return ResponseEntity.ok("Note deleted successfully.");
+    }
 }

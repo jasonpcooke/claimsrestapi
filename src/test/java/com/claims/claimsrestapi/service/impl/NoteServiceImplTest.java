@@ -203,5 +203,30 @@ class NoteServiceImplTest {
         verify(noteRepository, never()).save(any());
     }
 
+    @Test
+    void testDeleteNote_Success() {
+        // Given
+        Long noteId = 1L;
+        when(noteRepository.findById(noteId)).thenReturn(java.util.Optional.of(new Note()));
 
+        // When
+        noteService.deleteNote(noteId);
+
+        // Then
+        verify(noteRepository, times(1)).deleteById(noteId);
+    }
+
+    @Test
+    void testDeleteNote_NoteNotFound() {
+        // Given
+        Long noteId = 1L;
+        // When
+        when(noteRepository.findById(noteId)).thenReturn(java.util.Optional.empty());
+
+        // Then
+        assertThrows(
+                ResourceNotFoundException.class, 
+                () -> noteService.deleteNote(noteId));
+        verify(noteRepository, never()).deleteById(noteId);
+    }
 }
