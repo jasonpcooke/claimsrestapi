@@ -9,4 +9,5 @@ public interface NoteService {
     NoteDto getNoteById(Long noteId);
     List<NoteDto> getAllNotes();
     NoteDto updateNote(Long noteId, NoteDto updatedNote);
+    void deleteNote(Long noteId);
 }
