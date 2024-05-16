@@ -110,18 +110,17 @@ class NoteServiceImplTest {
         Long noteId = 1L;
 
         LocalDateTime localDateTime = LocalDateTime.now();
-        Date createdDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(1).toInstant());
+        Date createdDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(3).toInstant());
         Date updatedDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
         NoteDto updatedNote = new NoteDto();
         updatedNote.setContent("Lorem ipsum dolor");
-        updatedNote.setCreatedDateTime(createdDateTime);
         updatedNote.setUpdatedDateTime(updatedDateTime);
 
         Note note = new Note();
         note.setId(noteId);
         note.setContent("Lorem ipsum");
-        note.setCreatedDateTime(Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(3).toInstant()));
+        note.setCreatedDateTime(createdDateTime);
         note.setUpdatedDateTime(Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(2).toInstant()));
 
         when(noteRepository.findById(noteId)).thenReturn(Optional.of(note));
@@ -133,14 +132,12 @@ class NoteServiceImplTest {
         // Then
         assertEquals(noteId, result.getId());
         assertEquals(updatedNote.getContent(), result.getContent());
-        assertEquals(updatedNote.getCreatedDateTime(), result.getCreatedDateTime());
         assertEquals(updatedNote.getUpdatedDateTime(), result.getUpdatedDateTime());
 
         ArgumentCaptor<Note> captor = ArgumentCaptor.forClass(Note.class);
         verify(noteRepository).save(captor.capture());
         assertEquals(noteId, captor.getValue().getId());
         assertEquals(updatedNote.getContent(), captor.getValue().getContent());
-        assertEquals(updatedNote.getCreatedDateTime(), captor.getValue().getCreatedDateTime());
         assertEquals(updatedNote.getUpdatedDateTime(), captor.getValue().getUpdatedDateTime());
     }
 
@@ -176,19 +173,18 @@ class NoteServiceImplTest {
         Long noteId = 1L;
 
         LocalDateTime localDateTime = LocalDateTime.now();
-        Date createdDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        Date createdDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(2).toInstant());
         Date updatedDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(4).toInstant());
 
         NoteDto updatedNote = new NoteDto();
         updatedNote.setContent("Lorem ipsum dolor");
-        updatedNote.setCreatedDateTime(createdDateTime);
         updatedNote.setUpdatedDateTime(updatedDateTime);
 
         Note note = new Note();
         note.setId(noteId);
         note.setContent("Lorem ipsum");
-        note.setCreatedDateTime(Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(3).toInstant()));
-        note.setUpdatedDateTime(Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(2).toInstant()));
+        note.setCreatedDateTime(createdDateTime);
+        note.setUpdatedDateTime(Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(1).toInstant()));
 
         //  When
         when(noteRepository.findById(noteId)).thenReturn(Optional.of(note));

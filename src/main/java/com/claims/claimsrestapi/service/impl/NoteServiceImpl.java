@@ -48,13 +48,15 @@ public class NoteServiceImpl implements NoteService {
         Note note = noteRepository.findById(noteId).orElseThrow(
                 () -> new ResourceNotFoundException("Note does not exist with given ID: " + noteId)
         );
-        if(note.getCreatedDateTime().after(updatedNote.getUpdatedDateTime())){
+        if (note.getCreatedDateTime().after(updatedNote.getUpdatedDateTime())) {
             throw new CreatedAndUpdatedDateTimeException("UpdatedDateTime cannot be before CreatedDateTime");
         }
-        note.setContent(updatedNote.getContent());
-        note.setCreatedDateTime(updatedNote.getCreatedDateTime());
-        note.setUpdatedDateTime(updatedNote.getUpdatedDateTime());
-
+        if (updatedNote.getContent() != null) {
+            note.setContent(updatedNote.getContent());
+        }
+        if (updatedNote.getUpdatedDateTime() != null) {
+            note.setUpdatedDateTime(updatedNote.getUpdatedDateTime());
+        }
         Note updatedNoteObj = noteRepository.save(note);
 
         return NoteMapper.mapToNoteDto(updatedNoteObj);
