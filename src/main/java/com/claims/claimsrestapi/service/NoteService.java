@@ -8,4 +8,5 @@ public interface NoteService {
     NoteDto createNote(NoteDto noteDto);
     NoteDto getNoteById(Long noteId);
     List<NoteDto> getAllNotes();
+    NoteDto updateNote(Long noteId, NoteDto updatedNote);
 }

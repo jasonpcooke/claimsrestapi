@@ -164,6 +164,33 @@ class ClaimServiceImplTest {
         updatedClaim.setCreatedDateTime(createdDateTime);
         updatedClaim.setUpdatedDateTime(updatedDateTime);
 
+        //When
+        when(claimRepository.findById(claimId)).thenReturn(Optional.empty());
+
+
+        // Then
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> claimService.updateClaim(claimId, updatedClaim)); // Assert that an exception has been thrown due to the claim service not finding a claim with the provided claimId
+        verify(claimRepository, times(1)).findById(claimId); // Verify that findById was invoked once
+        verify(claimRepository, never()).save(any());
+    }
+
+    @Test
+    void testUpdateClaim_CreatedAndUpdatedDateTimeException() {
+        // Given
+        Long claimId = 1L;
+
+        LocalDateTime localDateTime = LocalDateTime.now();
+        Date createdDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        Date updatedDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(4).toInstant());
+
+        ClaimDto updatedClaim = new ClaimDto();
+        updatedClaim.setAmount(BigDecimal.valueOf(100.00));
+        updatedClaim.setStatus("APPROVED");
+        updatedClaim.setCreatedDateTime(createdDateTime);
+        updatedClaim.setUpdatedDateTime(updatedDateTime);
+
         Claim claim = new Claim();
         claim.setId(claimId);
         claim.setAmount(BigDecimal.valueOf(50.00));
@@ -181,33 +208,6 @@ class ClaimServiceImplTest {
                 () -> claimService.updateClaim(claimId, updatedClaim)
         );
 
-        verify(claimRepository, never()).save(any());
-    }
-
-    @Test
-    void testUpdateClaim_CreatedUpdatedDateTimeException() {
-        // Given
-        Long claimId = 1L;
-
-        LocalDateTime localDateTime = LocalDateTime.now();
-        Date createdDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-        Date updatedDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(4).toInstant());
-
-        ClaimDto updatedClaim = new ClaimDto();
-        updatedClaim.setAmount(BigDecimal.valueOf(100.00));
-        updatedClaim.setStatus("APPROVED");
-        updatedClaim.setCreatedDateTime(createdDateTime);
-        updatedClaim.setUpdatedDateTime(updatedDateTime);
-
-        //When
-        when(claimRepository.findById(claimId)).thenReturn(Optional.empty());
-
-
-        // Then
-        assertThrows(
-                ResourceNotFoundException.class,
-                () -> claimService.updateClaim(claimId, updatedClaim)); // Assert that an exception has been thrown due to the claim service not finding a claim with the provided claimId
-        verify(claimRepository, times(1)).findById(claimId); // Verify that findById was invoked once
         verify(claimRepository, never()).save(any());
     }
 

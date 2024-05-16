@@ -16,24 +16,32 @@ public class NoteController {
 
     private NoteService noteService;
 
-    //Build Add Note ReST API
+    //  Build Add Note ReST API
     @PostMapping
     public ResponseEntity<NoteDto> createNote(@RequestBody NoteDto noteDto) {
         NoteDto savedNote = noteService.createNote(noteDto);
         return new ResponseEntity<>(savedNote, HttpStatus.CREATED);
     }
 
-    //Build Get Note ReST API
+    //  Build Get Note ReST API
     @GetMapping("{id}")
     public ResponseEntity<NoteDto> getNoteById(@PathVariable("id") Long noteId){
         NoteDto noteDto = noteService.getNoteById(noteId);
         return ResponseEntity.ok(noteDto);
     }
 
-    //Build Get All Notes ReST API
+    //  Build Get All Notes ReST API
     @GetMapping
     public ResponseEntity<List<NoteDto>> getAllNotes(){
         List<NoteDto> notes = noteService.getAllNotes();
         return ResponseEntity.ok(notes);
+    }
+
+    // Build Update Note ReST API
+    @PutMapping("{id}")
+    public ResponseEntity<NoteDto> updatedNote(@PathVariable("id") Long noteId,
+                                                 @RequestBody NoteDto updatedNote){
+        NoteDto noteDto = noteService.updateNote(noteId, updatedNote);
+        return ResponseEntity.ok(noteDto);
     }
 }
