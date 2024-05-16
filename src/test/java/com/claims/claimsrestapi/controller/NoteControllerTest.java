@@ -41,16 +41,16 @@ class NoteControllerTest {
     void testCreateNote() {
         // Given
         NoteDto noteDto = new NoteDto(); // create a sample NoteDto
-        NoteDto savedNoteDto = new NoteDto(); // create a sample saved ClaimDto
-        when(noteService.createNote(any(NoteDto.class))).thenReturn(savedNoteDto); // mock claimService.createClaim to return the saved claim
+        NoteDto savedNoteDto = new NoteDto(); // create a sample saved NoteDto
+        when(noteService.createNote(any(NoteDto.class))).thenReturn(savedNoteDto); // mock noteService.createNote to return the saved note
 
         // When
         ResponseEntity<NoteDto> responseEntity = noteController.createNote(noteDto);
 
         // Then
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode()); // verify the status code
-        assertEquals(savedNoteDto, responseEntity.getBody()); // verify that the response body matches the saved claim
-        verify(noteService, times(1)).createNote(any(NoteDto.class)); // verify that claimService.createClaim was called once with any ClaimDto object
+        assertEquals(savedNoteDto, responseEntity.getBody()); // verify that the response body matches the saved note
+        verify(noteService, times(1)).createNote(any(NoteDto.class)); // verify that noteService.createNote was called once with any NoteDto object
     }
 
     @Test
@@ -68,7 +68,7 @@ class NoteControllerTest {
     }
 
     @Test
-    void testGetAllClaims() throws Exception {
+    void testGetAllNotes() throws Exception {
         // Given
         List<NoteDto> mockNotes = new ArrayList<>();
         NoteDto note1 = new NoteDto();
@@ -92,5 +92,26 @@ class NoteControllerTest {
                 .andExpect(jsonPath("$[0].id").value(note1.getId()))
                 .andExpect(jsonPath("$[1].id").value(note2.getId()));
         verify(noteService, times(1)).getAllNotes(); // Verifying that getAllNotes method of noteService is called exactly once
+    }
+
+    @Test
+    void testUpdatedNote() {
+        // Given
+        Long noteId = 1L;
+        NoteDto updatedNoteDto = new NoteDto();
+        updatedNoteDto.setContent("Lorem ipsum dolor");
+
+        NoteDto mockNoteDto = new NoteDto();
+        mockNoteDto.setId(noteId);
+        mockNoteDto.setContent("Lorem ipsum");
+
+        when(noteService.updateNote(noteId, updatedNoteDto)).thenReturn(mockNoteDto);
+
+        // When
+        ResponseEntity<NoteDto> responseEntity = noteController.updatedNote(noteId, updatedNoteDto);
+
+        // Then
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(mockNoteDto, responseEntity.getBody());
     }
 }

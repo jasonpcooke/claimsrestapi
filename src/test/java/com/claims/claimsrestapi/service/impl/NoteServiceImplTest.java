@@ -1,24 +1,26 @@
 package com.claims.claimsrestapi.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 import com.claims.claimsrestapi.dto.NoteDto;
 import com.claims.claimsrestapi.entity.Note;
+import com.claims.claimsrestapi.exception.CreatedAndUpdatedDateTimeException;
 import com.claims.claimsrestapi.exception.ResourceNotFoundException;
 import com.claims.claimsrestapi.mapper.NoteMapper;
 import com.claims.claimsrestapi.repository.NoteRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,10 +69,14 @@ class NoteServiceImplTest {
     void testGetNoteById_NonExistingNote() {
         // Given
         Long noteId = 1L;
+
+        // When
         when(noteRepository.findById(noteId)).thenReturn(Optional.empty()); // Return an empty Optional as a dummy note has not been instantiated
 
-        // When & Then
-        assertThrows(ResourceNotFoundException.class, () -> noteService.getNoteById(noteId)); // Assert that an exception has been thrown due to the note service not finding a note with the provided noteId
+        // Then
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> noteService.getNoteById(noteId)); // Assert that an exception has been thrown due to the note service not finding a note with the provided noteId
         verify(noteRepository, times(1)).findById(noteId); // Verify that findById was invoked once
     }
 
@@ -97,4 +103,105 @@ class NoteServiceImplTest {
         assertEquals(2L, result.get(1).getId()); // Asserting the second note ID in the result list
         verify(noteRepository, times(1)).findAll(); // Verifying that findAll method of noteRepository is called exactly once
     }
+
+    @Test
+    void testUpdateNote() {
+        // Given
+        Long noteId = 1L;
+
+        LocalDateTime localDateTime = LocalDateTime.now();
+        Date createdDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(1).toInstant());
+        Date updatedDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+
+        NoteDto updatedNote = new NoteDto();
+        updatedNote.setContent("Lorem ipsum dolor");
+        updatedNote.setCreatedDateTime(createdDateTime);
+        updatedNote.setUpdatedDateTime(updatedDateTime);
+
+        Note note = new Note();
+        note.setId(noteId);
+        note.setContent("Lorem ipsum");
+        note.setCreatedDateTime(Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(3).toInstant()));
+        note.setUpdatedDateTime(Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(2).toInstant()));
+
+        when(noteRepository.findById(noteId)).thenReturn(Optional.of(note));
+        when(noteRepository.save(any())).thenReturn(note);
+
+        // When
+        NoteDto result = noteService.updateNote(noteId, updatedNote);
+
+        // Then
+        assertEquals(noteId, result.getId());
+        assertEquals(updatedNote.getContent(), result.getContent());
+        assertEquals(updatedNote.getCreatedDateTime(), result.getCreatedDateTime());
+        assertEquals(updatedNote.getUpdatedDateTime(), result.getUpdatedDateTime());
+
+        ArgumentCaptor<Note> captor = ArgumentCaptor.forClass(Note.class);
+        verify(noteRepository).save(captor.capture());
+        assertEquals(noteId, captor.getValue().getId());
+        assertEquals(updatedNote.getContent(), captor.getValue().getContent());
+        assertEquals(updatedNote.getCreatedDateTime(), captor.getValue().getCreatedDateTime());
+        assertEquals(updatedNote.getUpdatedDateTime(), captor.getValue().getUpdatedDateTime());
+    }
+
+    @Test
+    void testUpdateNote_ResourceNotFoundException() {
+        // Given
+        Long noteId = 1L;
+
+        LocalDateTime localDateTime = LocalDateTime.now();
+        Date createdDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        Date updatedDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(4).toInstant());
+
+        NoteDto updatedNote = new NoteDto();
+        updatedNote.setContent("Lorem ipsum dolor");
+        updatedNote.setCreatedDateTime(createdDateTime);
+        updatedNote.setUpdatedDateTime(updatedDateTime);
+
+        //When
+        when(noteRepository.findById(noteId)).thenReturn(Optional.empty());
+
+
+        // Then
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> noteService.updateNote(noteId, updatedNote)); // Assert that an exception has been thrown due to the note service not finding a note with the provided noteId
+        verify(noteRepository, times(1)).findById(noteId); // Verify that findById was invoked once
+        verify(noteRepository, never()).save(any());
+    }
+
+    @Test
+    void testUpdateNote_CreatedUpdatedDateTimeException() {
+        // Given
+        Long noteId = 1L;
+
+        LocalDateTime localDateTime = LocalDateTime.now();
+        Date createdDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        Date updatedDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(4).toInstant());
+
+        NoteDto updatedNote = new NoteDto();
+        updatedNote.setContent("Lorem ipsum dolor");
+        updatedNote.setCreatedDateTime(createdDateTime);
+        updatedNote.setUpdatedDateTime(updatedDateTime);
+
+        Note note = new Note();
+        note.setId(noteId);
+        note.setContent("Lorem ipsum");
+        note.setCreatedDateTime(Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(3).toInstant()));
+        note.setUpdatedDateTime(Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(2).toInstant()));
+
+        //  When
+        when(noteRepository.findById(noteId)).thenReturn(Optional.of(note));
+
+
+        // Then
+        assertThrows(
+                CreatedAndUpdatedDateTimeException.class,
+                () -> noteService.updateNote(noteId, updatedNote)
+        );
+
+        verify(noteRepository, never()).save(any());
+    }
+
+
 }

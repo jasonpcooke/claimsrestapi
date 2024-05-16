@@ -6,12 +6,8 @@ import java.util.List;
 
 public interface ClaimService {
     ClaimDto createClaim(ClaimDto claimDto);
-
     ClaimDto getClaimById(Long claimId);
-
     List<ClaimDto> getAllClaims();
-
     ClaimDto updateClaim(Long claimId, ClaimDto updatedClaim);
-
     void deleteClaim(Long claimId);
 }
