@@ -18,6 +18,8 @@ import org.mockito.Mock;
 import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -70,5 +72,29 @@ class NoteServiceImplTest {
         // When & Then
         assertThrows(ResourceNotFoundException.class, () -> noteService.getNoteById(noteId)); // Assert that an exception has been thrown due to the note service not finding a note with the provided noteId
         verify(noteRepository, times(1)).findById(noteId); // Verify that findById was invoked once
+    }
+
+    @Test
+    void testGetAllNotes() {
+        // Given
+        List<Note> mockNotes = new ArrayList<>();
+        Note note1 = new Note();
+        note1.setId(1L);
+        mockNotes.add(note1);
+        Note note2 = new Note();
+        note2.setId(2L);
+        mockNotes.add(note2);
+
+        when(noteRepository.findAll()).thenReturn(mockNotes); // Mocking noteRepository.findAll() to return mockNotes
+
+        // When
+        List<NoteDto> result = noteService.getAllNotes(); // Calling the method under test
+
+        // Then
+        assertNotNull(result); // Asserting that the result is not null
+        assertEquals(2, result.size()); // Asserting that the size of the result list is 2
+        assertEquals(1L, result.get(0).getId()); // Asserting the first note ID in the result list
+        assertEquals(2L, result.get(1).getId()); // Asserting the second note ID in the result list
+        verify(noteRepository, times(1)).findAll(); // Verifying that findAll method of noteRepository is called exactly once
     }
 }

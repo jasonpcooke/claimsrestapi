@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/notes")
@@ -26,5 +28,12 @@ public class NoteController {
     public ResponseEntity<NoteDto> getNoteById(@PathVariable("id") Long noteId){
         NoteDto noteDto = noteService.getNoteById(noteId);
         return ResponseEntity.ok(noteDto);
+    }
+
+    //Build Get All Notes ReST API
+    @GetMapping
+    public ResponseEntity<List<NoteDto>> getAllNotes(){
+        List<NoteDto> notes = noteService.getAllNotes();
+        return ResponseEntity.ok(notes);
     }
 }
