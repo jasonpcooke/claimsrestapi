@@ -111,13 +111,11 @@ class ClaimServiceImplTest {
         Long claimId = 1L;
 
         LocalDateTime localDateTime = LocalDateTime.now();
-        Date createdDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(1).toInstant());
         Date updatedDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
         ClaimDto updatedClaim = new ClaimDto();
         updatedClaim.setAmount(BigDecimal.valueOf(100.00));
         updatedClaim.setStatus("APPROVED");
-        updatedClaim.setCreatedDateTime(createdDateTime);
         updatedClaim.setUpdatedDateTime(updatedDateTime);
 
         Claim claim = new Claim();
@@ -137,7 +135,6 @@ class ClaimServiceImplTest {
         assertEquals(claimId, result.getId());
         assertEquals(updatedClaim.getAmount(), result.getAmount());
         assertEquals(updatedClaim.getStatus(), result.getStatus());
-        assertEquals(updatedClaim.getCreatedDateTime(), result.getCreatedDateTime());
         assertEquals(updatedClaim.getUpdatedDateTime(), result.getUpdatedDateTime());
 
         ArgumentCaptor<Claim> captor = ArgumentCaptor.forClass(Claim.class);
@@ -145,7 +142,6 @@ class ClaimServiceImplTest {
         assertEquals(claimId, captor.getValue().getId());
         assertEquals(updatedClaim.getAmount(), captor.getValue().getAmount());
         assertEquals(updatedClaim.getStatus(), captor.getValue().getStatus());
-        assertEquals(updatedClaim.getCreatedDateTime(), captor.getValue().getCreatedDateTime());
         assertEquals(updatedClaim.getUpdatedDateTime(), captor.getValue().getUpdatedDateTime());
     }
 
@@ -182,13 +178,11 @@ class ClaimServiceImplTest {
         Long claimId = 1L;
 
         LocalDateTime localDateTime = LocalDateTime.now();
-        Date createdDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
         Date updatedDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(4).toInstant());
 
         ClaimDto updatedClaim = new ClaimDto();
         updatedClaim.setAmount(BigDecimal.valueOf(100.00));
         updatedClaim.setStatus("APPROVED");
-        updatedClaim.setCreatedDateTime(createdDateTime);
         updatedClaim.setUpdatedDateTime(updatedDateTime);
 
         Claim claim = new Claim();

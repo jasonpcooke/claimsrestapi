@@ -48,14 +48,18 @@ public class ClaimServiceImpl implements ClaimService {
         Claim claim = claimRepository.findById(claimId).orElseThrow(
                 () -> new ResourceNotFoundException("Claim does not exist with given ID: " + claimId)
         );
-        if(claim.getCreatedDateTime().after(updatedClaim.getUpdatedDateTime())){
+        if (claim.getCreatedDateTime().after(updatedClaim.getUpdatedDateTime())) {
             throw new CreatedAndUpdatedDateTimeException("UpdatedDateTime cannot be before CreatedDateTime");
         }
-        claim.setAmount(updatedClaim.getAmount());
-        claim.setStatus(updatedClaim.getStatus());
-        claim.setCreatedDateTime(updatedClaim.getCreatedDateTime());
-        claim.setUpdatedDateTime(updatedClaim.getUpdatedDateTime());
-
+        if (updatedClaim.getAmount() != null) {
+            claim.setAmount(updatedClaim.getAmount());
+        }
+        if (updatedClaim.getStatus() != null){
+            claim.setStatus(updatedClaim.getStatus());
+        }
+        if (updatedClaim.getUpdatedDateTime() != null) {
+            claim.setUpdatedDateTime(updatedClaim.getUpdatedDateTime());
+        }
         Claim updatedClaimObj = claimRepository.save(claim);
 
         return ClaimMapper.mapToClaimDto(updatedClaimObj);
