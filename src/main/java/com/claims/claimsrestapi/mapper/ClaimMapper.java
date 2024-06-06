@@ -8,6 +8,7 @@ public class ClaimMapper {
     public static ClaimDto mapToClaimDto(Claim claim){
         return new ClaimDto(
                 claim.getId(),
+                claim.getNotes(),
                 claim.getAmount(),
                 claim.getStatus(),
                 claim.getCreatedDateTime(),
@@ -18,6 +19,7 @@ public class ClaimMapper {
     public static Claim mapToClaim(ClaimDto claimDto){
         return new Claim(
                 claimDto.getId(),
+                claimDto.getNotes(),
                 claimDto.getAmount(),
                 claimDto.getStatus(),
                 claimDto.getCreatedDateTime(),

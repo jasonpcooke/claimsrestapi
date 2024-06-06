@@ -2,7 +2,6 @@ package com.claims.claimsrestapi.service.impl;
 
 import com.claims.claimsrestapi.dto.NoteDto;
 import com.claims.claimsrestapi.entity.Note;
-import com.claims.claimsrestapi.exception.CreatedAndUpdatedDateTimeException;
 import com.claims.claimsrestapi.exception.ResourceNotFoundException;
 import com.claims.claimsrestapi.mapper.NoteMapper;
 import com.claims.claimsrestapi.repository.NoteRepository;
@@ -48,14 +47,8 @@ public class NoteServiceImpl implements NoteService {
         Note note = noteRepository.findById(noteId).orElseThrow(
                 () -> new ResourceNotFoundException("Note does not exist with given ID: " + noteId)
         );
-        if (note.getCreatedDateTime().after(updatedNote.getUpdatedDateTime())) {
-            throw new CreatedAndUpdatedDateTimeException("UpdatedDateTime cannot be before CreatedDateTime");
-        }
         if (updatedNote.getContent() != null) {
             note.setContent(updatedNote.getContent());
-        }
-        if (updatedNote.getUpdatedDateTime() != null) {
-            note.setUpdatedDateTime(updatedNote.getUpdatedDateTime());
         }
         Note updatedNoteObj = noteRepository.save(note);
 
