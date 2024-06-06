@@ -5,7 +5,6 @@ import static org.mockito.Mockito.*;
 
 import com.claims.claimsrestapi.dto.ClaimDto;
 import com.claims.claimsrestapi.entity.Claim;
-import com.claims.claimsrestapi.exception.CreatedAndUpdatedDateTimeException;
 import com.claims.claimsrestapi.exception.ResourceNotFoundException;
 import com.claims.claimsrestapi.mapper.ClaimMapper;
 import com.claims.claimsrestapi.repository.ClaimRepository;
@@ -18,10 +17,7 @@ import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -106,24 +102,20 @@ class ClaimServiceImplTest {
     }
 
     @Test
-    void testUpdateClaim() {
+    void testUpdateClaimSuccessfully() {
         // Given
         Long claimId = 1L;
 
-        LocalDateTime localDateTime = LocalDateTime.now();
-        Date updatedDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
         ClaimDto updatedClaim = new ClaimDto();
         updatedClaim.setAmount(BigDecimal.valueOf(100.00));
         updatedClaim.setStatus("APPROVED");
-        updatedClaim.setUpdatedDateTime(updatedDateTime);
+
 
         Claim claim = new Claim();
         claim.setId(claimId);
         claim.setAmount(BigDecimal.valueOf(50.00));
         claim.setStatus("REJECTED");
-        claim.setCreatedDateTime(Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(3).toInstant()));
-        claim.setUpdatedDateTime(Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(2).toInstant()));
 
         when(claimRepository.findById(claimId)).thenReturn(Optional.of(claim));
         when(claimRepository.save(any())).thenReturn(claim);
@@ -135,7 +127,6 @@ class ClaimServiceImplTest {
         assertEquals(claimId, result.getId());
         assertEquals(updatedClaim.getAmount(), result.getAmount());
         assertEquals(updatedClaim.getStatus(), result.getStatus());
-        assertEquals(updatedClaim.getUpdatedDateTime(), result.getUpdatedDateTime());
 
         ArgumentCaptor<Claim> captor = ArgumentCaptor.forClass(Claim.class);
         verify(claimRepository).save(captor.capture());
@@ -150,15 +141,9 @@ class ClaimServiceImplTest {
         // Given
         Long claimId = 1L;
 
-        LocalDateTime localDateTime = LocalDateTime.now();
-        Date createdDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-        Date updatedDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(4).toInstant());
-
         ClaimDto updatedClaim = new ClaimDto();
         updatedClaim.setAmount(BigDecimal.valueOf(100.00));
         updatedClaim.setStatus("APPROVED");
-        updatedClaim.setCreatedDateTime(createdDateTime);
-        updatedClaim.setUpdatedDateTime(updatedDateTime);
 
         //When
         when(claimRepository.findById(claimId)).thenReturn(Optional.empty());
@@ -169,39 +154,6 @@ class ClaimServiceImplTest {
                 ResourceNotFoundException.class,
                 () -> claimService.updateClaim(claimId, updatedClaim)); // Assert that an exception has been thrown due to the claim service not finding a claim with the provided claimId
         verify(claimRepository, times(1)).findById(claimId); // Verify that findById was invoked once
-        verify(claimRepository, never()).save(any());
-    }
-
-    @Test
-    void testUpdateClaim_CreatedAndUpdatedDateTimeException() {
-        // Given
-        Long claimId = 1L;
-
-        LocalDateTime localDateTime = LocalDateTime.now();
-        Date updatedDateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(4).toInstant());
-
-        ClaimDto updatedClaim = new ClaimDto();
-        updatedClaim.setAmount(BigDecimal.valueOf(100.00));
-        updatedClaim.setStatus("APPROVED");
-        updatedClaim.setUpdatedDateTime(updatedDateTime);
-
-        Claim claim = new Claim();
-        claim.setId(claimId);
-        claim.setAmount(BigDecimal.valueOf(50.00));
-        claim.setStatus("REJECTED");
-        claim.setCreatedDateTime(Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(3).toInstant()));
-        claim.setUpdatedDateTime(Date.from(localDateTime.atZone(ZoneId.systemDefault()).minusDays(2).toInstant()));
-
-        //  When
-        when(claimRepository.findById(claimId)).thenReturn(Optional.of(claim));
-
-
-        // Then
-        assertThrows(
-                CreatedAndUpdatedDateTimeException.class,
-                () -> claimService.updateClaim(claimId, updatedClaim)
-        );
-
         verify(claimRepository, never()).save(any());
     }
 

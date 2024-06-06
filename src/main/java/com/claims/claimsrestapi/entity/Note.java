@@ -1,17 +1,15 @@
 package com.claims.claimsrestapi.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+
 
 @Getter
 @Setter
@@ -25,12 +23,18 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "claim_id")
+    private Claim claim;
+
     @Column
     private String content;
 
     @Column(name = "created_date_time")
-    private Date createdDateTime;
+    @CreationTimestamp
+    private LocalDateTime createdDateTime;
 
     @Column(name = "updated_date_time")
-    private Date updatedDateTime;
+    @UpdateTimestamp
+    private LocalDateTime updatedDateTime;
 }

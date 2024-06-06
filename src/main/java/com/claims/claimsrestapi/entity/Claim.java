@@ -1,18 +1,16 @@
 package com.claims.claimsrestapi.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,6 +24,9 @@ public class Claim {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToMany(mappedBy = "claim", cascade = CascadeType.ALL)
+    private List<Note> notes;
+
     @Column
     private BigDecimal amount;
 
@@ -33,8 +34,10 @@ public class Claim {
     private String status;
 
     @Column(name = "created_date_time")
-    private Date createdDateTime;
+    @CreationTimestamp
+    private LocalDateTime createdDateTime;
 
     @Column(name = "updated_date_time")
-    private Date updatedDateTime;
+    @UpdateTimestamp
+    private LocalDateTime updatedDateTime;
 }
